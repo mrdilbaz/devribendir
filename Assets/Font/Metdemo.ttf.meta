@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: e35bcadaaf77a40f0b5c38cf7d0801a0
+timeCreated: 1506124212
+licenseType: Pro
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: MetDemo
+  fontNames:
+  - MetDemo
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
