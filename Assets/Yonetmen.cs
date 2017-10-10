@@ -24,12 +24,16 @@ public class Yonetmen : MonoBehaviour
 
     [HeaderAttribute("Ritim Değeri")]
     public float ritim;
+    
+    
     private Usul demUsul;
     private Usul ahirUsul;
 
-
     [HeaderAttribute("Metronom")]
     public AudioSource metronom;
+
+    [HeaderAttribute("Ayarlar")]
+    public Ayarlar ayarlar;
 
 
     void Awake()
@@ -38,18 +42,28 @@ public class Yonetmen : MonoBehaviour
         ahir.gameObject.SetActive(false);
         geriSayım.gameObject.SetActive(true);
         kere.gameObject.SetActive(false);
+
+        if(!ayarlar.vuruslariGoster){
+            dem.Find("Resim").GetComponent<Image>().enabled = false;
+            ahir.Find("Resim").GetComponent<Image>().enabled = false;
+            dem.Find("Vurus-Birim").GetComponent<Text>().enabled = true;
+            ahir.Find("Vurus-Birim").GetComponent<Text>().enabled = true;
+        }
+    
+
+        ritim =  60f / ayarlar.tempo;
     }
     IEnumerator Start()
     {
         TikTak();
         geriSayım.text = "3";
-        yield return new WaitForSeconds(ritim);
+        yield return new WaitForSeconds(1);
         TikTak();
         geriSayım.text = "2";
-        yield return new WaitForSeconds(ritim);
+        yield return new WaitForSeconds(1);
         TikTak();
         geriSayım.text = "1";
-        yield return new WaitForSeconds(ritim);
+        yield return new WaitForSeconds(1);
         TikTak();
         geriSayım.gameObject.SetActive(false);
         Rastgele(dem, true);
@@ -59,8 +73,11 @@ public class Yonetmen : MonoBehaviour
         dem.gameObject.SetActive(true);
         ahir.gameObject.SetActive(true);
         kere.gameObject.SetActive(true);
+        
         Invoke("Degistir", (demUsul.zaman * ritim * kereInt) - 0.25f);
-        InvokeRepeating("TikTak", ritim, ritim);
+        
+        if(ayarlar.metronom)
+            InvokeRepeating("TikTak", ritim, ritim);
     }
 
     void TikTak()
@@ -116,6 +133,7 @@ public class Yonetmen : MonoBehaviour
 
         usl.transform.Find("Resim").GetComponent<Image>().sprite = yeni.resim;
         usl.transform.Find("Usül").GetComponent<Text>().text = yeni.name;
+        usl.transform.Find("Vurus-Birim").GetComponent<Text>().text = yeni.zaman + "\n" + yeni.birim;
     }
 }
 
