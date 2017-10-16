@@ -30,6 +30,7 @@ public class UsulSablon : MonoBehaviour
     public RectTransform altCizgi;
     public Text zamanText;
     public Text birimText;
+    public Text usulText;
     public Image vurusSablon;
     public Vurus[] vurusBilgileri;
 
@@ -43,7 +44,7 @@ public class UsulSablon : MonoBehaviour
 
 
     private Dictionary<VurusTipi, Vurus> vurusListesi = new Dictionary<VurusTipi, Vurus>();
-
+    private List<GameObject> _vurusObjeleri = new List<GameObject>();
     void ListeyiOlustur()
     {
         vurusListesi = new Dictionary<VurusTipi, Vurus>();
@@ -54,7 +55,7 @@ public class UsulSablon : MonoBehaviour
     }
 
     const int baslangic = 50;
-    const int bitis = 350;
+    const int bitis = 310;
 
     [ExecuteInEditMode]
     public void Olustur()
@@ -62,15 +63,11 @@ public class UsulSablon : MonoBehaviour
 
         ListeyiOlustur();
 
-        foreach (Transform t in ustCizgi)
-        {
-            DestroyImmediate(t.gameObject);
+        foreach(GameObject v in _vurusObjeleri){
+            DestroyImmediate(v);
         }
 
-        foreach (Transform t in altCizgi)
-        {
-            DestroyImmediate(t.gameObject);
-        }
+        _vurusObjeleri.Clear();
 
 		int aralik = (bitis - baslangic) / ( vuruslar.Length+1);
         int pozisyon = baslangic;
@@ -80,7 +77,7 @@ public class UsulSablon : MonoBehaviour
         {
             GameObject vrs = GameObject.Instantiate(vurusSablon.gameObject);
 
-            if (v.ToString().StartsWith("Dum"))
+            if (v.ToString().StartsWith("Dum") || v.ToString().StartsWith("Hek"))
             {
 				pozisyon += aralik / 2;
                 vrs.transform.SetParent(ustCizgi);
@@ -102,18 +99,31 @@ public class UsulSablon : MonoBehaviour
 
             vrs.GetComponent<RectTransform>().anchorMin = Vector2.zero;
             vrs.GetComponent<RectTransform>().anchorMax = Vector2.zero;
-            vrs.GetComponent<RectTransform>().pivot = vurusListesi[v].sprite.pivot / 128;
+            
+            if(v.ToString().StartsWith("Hek"))
+            {
+                vrs.GetComponent<RectTransform>().pivot = new Vector2(vurusListesi[v].sprite.pivot.x / 128,
+                                                                      vurusListesi[v].sprite.pivot.y / 256);
+                vrs.GetComponent<RectTransform>().anchoredPosition = new Vector2(pozisyon, 0);
+                vrs.GetComponent<RectTransform>().sizeDelta = new Vector2(64,128);
 
-            vrs.GetComponent<RectTransform>().anchoredPosition = new Vector2(pozisyon, 0);
+            }
+            else
+            {
+                vrs.GetComponent<RectTransform>().pivot = vurusListesi[v].sprite.pivot / 128;
+                vrs.GetComponent<RectTransform>().anchoredPosition = new Vector2(pozisyon, 0);
+                vrs.GetComponent<RectTransform>().sizeDelta = new Vector2(64,90);
+            }
 			
-			vrs.GetComponent<RectTransform>().sizeDelta = new Vector2(100,100);
 
-            pozisyon += v.ToString().StartsWith("Dum") ? aralik / 2 : (aralik * 3) / 2;
-
+            pozisyon += v.ToString().StartsWith("Dum") ? aralik / 2 : (aralik * 1) / 1;
+            //pozisyon += aralik;// / 2;
+            _vurusObjeleri.Add(vrs);
         }
 
 		birimText.text = birim.ToString();
 		zamanText.text = zaman.ToString();
+        usulText.text = UsulAdı;
     }
 
 }
@@ -141,6 +151,8 @@ public enum VurusTipi
     Tek2,
     Tek4,
     Tek8,
-    Tek16
+    Tek16,
+    Hek4,
+    Hek8
 
 }

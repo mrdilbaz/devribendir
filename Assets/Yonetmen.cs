@@ -144,5 +144,5 @@ public class Usul
     public Sprite resim;
     public int zaman;
     public int birim;
-    public int vurus;
+    public VurusTipi[] vuruslar;
 }
