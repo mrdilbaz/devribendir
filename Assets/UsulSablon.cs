@@ -43,8 +43,10 @@ public class UsulSablon : MonoBehaviour
     public VurusTipi[] vuruslar;
 
 
-    private Dictionary<VurusTipi, Vurus> vurusListesi = new Dictionary<VurusTipi, Vurus>();
-    private List<GameObject> _vurusObjeleri = new List<GameObject>();
+    public Dictionary<VurusTipi, Vurus> vurusListesi = new Dictionary<VurusTipi, Vurus>();
+    
+    public List<GameObject> _vurusObjeleri = new List<GameObject>();
+    
     void ListeyiOlustur()
     {
         vurusListesi = new Dictionary<VurusTipi, Vurus>();
@@ -54,8 +56,8 @@ public class UsulSablon : MonoBehaviour
         }
     }
 
-    const int baslangic = 50;
-    const int bitis = 310;
+    const int baslangic = 35;
+    const int bitis = 315;
 
     [ExecuteInEditMode]
     public void Olustur()
@@ -70,17 +72,19 @@ public class UsulSablon : MonoBehaviour
         _vurusObjeleri.Clear();
 
 		int aralik = (bitis - baslangic) / ( vuruslar.Length+1);
-        int pozisyon = baslangic;
-		
+        int pozisyon = baslangic + aralik;
 
+        VurusTipi onceki = vuruslar[0];
         foreach (VurusTipi v in vuruslar)
         {
             GameObject vrs = GameObject.Instantiate(vurusSablon.gameObject);
 
             if (v.ToString().StartsWith("Dum") || v.ToString().StartsWith("Hek"))
             {
-				pozisyon += aralik / 2;
                 vrs.transform.SetParent(ustCizgi);
+                if(onceki.ToString().StartsWith("Tek")){
+                    pozisyon += aralik / 2;
+                }
             }
             else
             {
@@ -102,6 +106,7 @@ public class UsulSablon : MonoBehaviour
             
             if(v.ToString().StartsWith("Hek"))
             {
+                pozisyon += aralik / 2;
                 vrs.GetComponent<RectTransform>().pivot = new Vector2(vurusListesi[v].sprite.pivot.x / 128,
                                                                       vurusListesi[v].sprite.pivot.y / 256);
                 vrs.GetComponent<RectTransform>().anchoredPosition = new Vector2(pozisyon, 0);
@@ -116,9 +121,15 @@ public class UsulSablon : MonoBehaviour
             }
 			
 
-            pozisyon += v.ToString().StartsWith("Dum") ? aralik / 2 : (aralik * 1) / 1;
-            //pozisyon += aralik;// / 2;
+            //pozisyon += v.ToString().StartsWith("Dum") ? aralik / 2 : (aralik * 1) / 1;
+            if(v.ToString().StartsWith("Dum")){
+                pozisyon += aralik / 2;
+            } else {
+                pozisyon += aralik;
+            }
+           // pozisyon += aralik;// / 2;
             _vurusObjeleri.Add(vrs);
+            onceki = v;
         }
 
 		birimText.text = birim.ToString();
@@ -131,15 +142,10 @@ public class UsulSablon : MonoBehaviour
 [System.Serializable]
 public class Vurus
 {
-    public string name
-    {
-        get
-        {
-            return vurus.ToString();
-        }
-    }
     public VurusTipi vurus;
     public Sprite sprite;
+    public VurusSesi ses;
+    public int zaman;
 }
 
 public enum VurusTipi
@@ -154,5 +160,10 @@ public enum VurusTipi
     Tek16,
     Hek4,
     Hek8
+}
 
+public enum VurusSesi{
+    Dum,
+    Tek,
+    Hek
 }

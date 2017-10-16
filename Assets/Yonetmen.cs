@@ -53,7 +53,8 @@ public class Yonetmen : MonoBehaviour
 
         ritim =  60f / ayarlar.tempo;
     }
-    IEnumerator Start()
+
+    IEnumerator YonetmenBasla()
     {
         TikTak();
         geriSayım.text = "3";
@@ -79,6 +80,19 @@ public class Yonetmen : MonoBehaviour
         if(ayarlar.metronom)
             InvokeRepeating("TikTak", ritim, ritim);
     }
+
+    public void MetronomBaslat(){
+        CancelInvoke("TikTak");
+        if (ayarlar.metronom)
+        {
+            InvokeRepeating("TikTak", ritim, ritim);   
+        }
+    }
+
+    public void MetronomDurdur(){
+        CancelInvoke("TikTak");
+    }
+
 
     void TikTak()
     {
