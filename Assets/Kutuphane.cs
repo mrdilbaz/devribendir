@@ -32,9 +32,12 @@ public class Kutuphane : MonoBehaviour
 
     public void Vur()
     {
+        StopAllCoroutines();
+        yonetmen.MetronomDurdur();
         StartCoroutine(UsulVur(usuller[usulIndex]));
     }
 
+    float lastVurus = 0;
     IEnumerator UsulVur(Usul usul)
     {
         yonetmen.MetronomBaslat();
@@ -59,8 +62,14 @@ public class Kutuphane : MonoBehaviour
                         tek.Play();
                         break;
                 }
+                float vurusTime = Time.time;
+                //Debug.Log("Vurus:" + vurusTime);
+                //Debug.Log("Son vurustan beri:" + (vurusTime - lastVurus));
+                lastVurus = vurusTime;
                 sablon._vurusObjeleri[i].GetComponent<Image>().color = Color.green;
-                yield return new WaitForSeconds(yonetmen.ritim * ((usul.birim * 1f) / (vurus.zaman * 1f)));
+                float bekleme = yonetmen.ritim * ((usul.birim * 1f) / (vurus.zaman * 1f));
+                yield return new WaitForSeconds(bekleme);
+                
                 sablon._vurusObjeleri[i].GetComponent<Image>().color = Color.white;
                 i++;
             }
@@ -72,6 +81,7 @@ public class Kutuphane : MonoBehaviour
     public void Degistir(bool ileri)
     {
         StopAllCoroutines();
+        yonetmen.MetronomDurdur();
         usulIndex = ileri ? (usulIndex == usuller.Length - 1 ? 0 : usulIndex + 1) :
                             (usulIndex == 0 ? usuller.Length - 1 : usulIndex - 1);
 

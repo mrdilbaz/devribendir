@@ -9,7 +9,7 @@ public class Navigasyon : MonoBehaviour {
 
 
     private bool navOpen = false;
-
+    public Yonetmen yonetmen;
     public GameObject Kapatici;
     public EasyTween menuAnimasyon;
 
@@ -41,8 +41,12 @@ public class Navigasyon : MonoBehaviour {
 	}
 
 	public void SayfaDegistir(int _sayfa){
+        yonetmen.MetronomDurdur();
         Sayfa sayfa = (Sayfa)_sayfa;
         sayfalar[dem].SetActive(false);
+        if(dem == Sayfa.PRATİK){
+            yonetmen.Resetle();
+        }
         dem = sayfa;
 		sayfalar[dem].SetActive(true);
         transform.Find("Text").GetComponent<Text>().text = sayfa.ToString();

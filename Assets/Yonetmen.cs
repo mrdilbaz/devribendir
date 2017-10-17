@@ -21,6 +21,8 @@ public class Yonetmen : MonoBehaviour
     public Text geriSayım;
     public Text kere;
 
+    public GameObject baslaButton;
+
 
     [HeaderAttribute("Ritim Değeri")]
     public float ritim;
@@ -38,9 +40,10 @@ public class Yonetmen : MonoBehaviour
 
     void Awake()
     {
+        baslaButton.SetActive(true);
         dem.gameObject.SetActive(false);
         ahir.gameObject.SetActive(false);
-        geriSayım.gameObject.SetActive(true);
+        geriSayım.gameObject.SetActive(false);
         kere.gameObject.SetActive(false);
 
         if(!ayarlar.vuruslariGoster){
@@ -54,8 +57,21 @@ public class Yonetmen : MonoBehaviour
         ritim =  60f / ayarlar.tempo;
     }
 
+    public void Basla(){
+        StartCoroutine(YonetmenBasla());
+    }
+
+    public void Resetle(){
+        StopAllCoroutines();
+        CancelInvoke("TikTak");
+        CancelInvoke("Degistir");
+        Awake();
+    }
+
     IEnumerator YonetmenBasla()
     {
+        baslaButton.SetActive(false);
+        geriSayım.gameObject.SetActive(true);
         TikTak();
         geriSayım.text = "3";
         yield return new WaitForSeconds(1);
@@ -85,6 +101,7 @@ public class Yonetmen : MonoBehaviour
         CancelInvoke("TikTak");
         if (ayarlar.metronom)
         {
+            Debug.Log("Metronom başlatma aralığı:" + ritim);
             InvokeRepeating("TikTak", ritim, ritim);   
         }
     }
@@ -97,7 +114,7 @@ public class Yonetmen : MonoBehaviour
     void TikTak()
     {
         metronom.Play();
-        
+        Debug.Log("Metronom:" + Time.time);
     }
 
     void Degistir()
