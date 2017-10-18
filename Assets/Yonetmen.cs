@@ -40,6 +40,7 @@ public class Yonetmen : MonoBehaviour
 
     void Awake()
     {
+        Application.targetFrameRate = 100;
         baslaButton.SetActive(true);
         dem.gameObject.SetActive(false);
         ahir.gameObject.SetActive(false);
@@ -101,20 +102,25 @@ public class Yonetmen : MonoBehaviour
         CancelInvoke("TikTak");
         if (ayarlar.metronom)
         {
-            Debug.Log("Metronom başlatma aralığı:" + ritim);
-            InvokeRepeating("TikTak", ritim, ritim);   
+            //Debug.Log("Metronom başlatma aralığı:" + ritim);
+            InvokeRepeating("TikTak", 0, ritim);   
         }
     }
 
+    
     public void MetronomDurdur(){
         CancelInvoke("TikTak");
     }
 
-
+    public float sonVurus = 0;
+    public static bool vurabilir = false;
     void TikTak()
     {
         metronom.Play();
-        Debug.Log("Metronom:" + Time.time);
+        vurabilir = true;
+        //Debug.Log("---------Metronom aralik:" + (Time.time - lastVurus));
+        //Debug.Log("----Metronom:" + Time.time);
+        sonVurus = Time.time;
     }
 
     void Degistir()

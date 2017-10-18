@@ -11,7 +11,7 @@ public class Kutuphane : MonoBehaviour
     public Usul[] usuller;
 
     private int usulIndex = 0;
-
+    private int vurusIndex = 0;
 
     public AudioSource dum;
     public AudioSource tek;
@@ -30,57 +30,68 @@ public class Kutuphane : MonoBehaviour
         Uygula(0);
     }
 
+    public void OnDisable(){
+        CancelInvoke("Darp");
+    }
+
     public void Vur()
     {
-        StopAllCoroutines();
         yonetmen.MetronomDurdur();
-        StartCoroutine(UsulVur(usuller[usulIndex]));
+        CancelInvoke("Darp");
+        yonetmen.MetronomBaslat();
+        vurusIndex = 0;
+        Invoke("Darp", yonetmen.ritim*2);
     }
 
     float lastVurus = 0;
-    IEnumerator UsulVur(Usul usul)
-    {
-        yonetmen.MetronomBaslat();
-        yield return new WaitForSeconds(yonetmen.ritim * 3);
-        
-        do
+    public void Darp(){
+        VurusTipi vurustipi = usuller[usulIndex].vuruslar[vurusIndex];
+        Vurus vurus = sablon.vurusListesi[vurustipi];
+        switch (vurus.ses)
         {
-			int i = 0;
-            foreach (VurusTipi vurustipi in usul.vuruslar)
-            {
-                Vurus vurus = sablon.vurusListesi[vurustipi];
-                switch (vurus.ses)
-                {
-                    case VurusSesi.Dum:
-                        dum.Play();
-                        break;
-                    case VurusSesi.Tek:
-                        tek.Play();
-                        break;
-                    case VurusSesi.Hek:
-                        dum.Play();
-                        tek.Play();
-                        break;
-                }
-                float vurusTime = Time.time;
-                //Debug.Log("Vurus:" + vurusTime);
-                //Debug.Log("Son vurustan beri:" + (vurusTime - lastVurus));
-                lastVurus = vurusTime;
-                sablon._vurusObjeleri[i].GetComponent<Image>().color = Color.green;
-                float bekleme = yonetmen.ritim * ((usul.birim * 1f) / (vurus.zaman * 1f));
-                yield return new WaitForSeconds(bekleme);
-                
-                sablon._vurusObjeleri[i].GetComponent<Image>().color = Color.white;
-                i++;
-            }
-        } while (tekrar);
+            case VurusSesi.Dum:
+                dum.Play();
+                break;
+            case VurusSesi.Tek:
+                tek.Play();
+                break;
+            case VurusSesi.Hek:
+                dum.Play();
+                tek.Play();
+                break;
+        }
+        //Debug.Log(Time.time);
+        sablon._vurusObjeleri[vurusIndex].GetComponent<Image>().color = Color.green;
+        int oncekiVurus = vurusIndex == 0 ? usuller[usulIndex].vuruslar.Length-1 : vurusIndex -1;
+        sablon._vurusObjeleri[oncekiVurus].GetComponent<Image>().color = Color.white;
 
-        yonetmen.MetronomDurdur();
+        
+        Debug.Log(Time.time - lastVurus);
+        lastVurus = Time.time;
+
+        if(vurusIndex == usuller[usulIndex].vuruslar.Length - 1){
+            if(tekrar){
+                float bekleme = yonetmen.ritim * ((usuller[usulIndex].birim * 1f) / (vurus.zaman * 1f));
+                Invoke("Darp", bekleme);
+            } else {
+                Invoke("Sondur",yonetmen.ritim);
+                yonetmen.MetronomDurdur();
+            }
+        } else {
+            float bekleme = yonetmen.ritim * ((usuller[usulIndex].birim * 1f) / (vurus.zaman * 1f));
+            Invoke("Darp", bekleme);
+        }   
+
+        vurusIndex = vurusIndex == usuller[usulIndex].vuruslar.Length - 1 ? 0 : vurusIndex + 1;   
+    }
+
+    public void Sondur(){
+        sablon._vurusObjeleri[usuller[usulIndex].vuruslar.Length - 1].GetComponent<Image>().color = Color.white;
     }
 
     public void Degistir(bool ileri)
     {
-        StopAllCoroutines();
+        CancelInvoke("Darp");
         yonetmen.MetronomDurdur();
         usulIndex = ileri ? (usulIndex == usuller.Length - 1 ? 0 : usulIndex + 1) :
                             (usulIndex == 0 ? usuller.Length - 1 : usulIndex - 1);
